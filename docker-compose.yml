@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    environment:
+      - QDRANT_HOST=${QDRANT_HOST}
+      - QDRANT_PORT=${QDRANT_PORT}
+      - NATS_URL=${NATS_URL}
+    depends_on:
+      - qdrant
+      - nats
+    networks:
+      - gony-network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "${QDRANT_PORT}:${QDRANT_PORT}"
+      - "${QDRANT_GRPC_PORT}:${QDRANT_GRPC_PORT}"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - gony-network
+
+  nats:
+    image: nats:latest
+    ports:
+      - "${NATS_PORT}:${NATS_PORT}"
+      - "${NATS_HTTP_PORT}:${NATS_HTTP_PORT}"
+    networks:
+      - gony-network
+
+networks:
+  gony-network:
+    driver: bridge
+
+volumes:
+  qdrant_storage:
