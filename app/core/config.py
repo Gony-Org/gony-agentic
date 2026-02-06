@@ -15,15 +15,19 @@ class Settings(BaseSettings):
     NATS_URL: str = "nats://localhost:4222"
 
     # PostgreSQL
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_DB: str = "gony_db"
+    POSTGRES_USER: str = "admin"
+    POSTGRES_PASSWORD: str = "password"
+    POSTGRES_DB: str = "crud"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
 
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    # Gemini
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-pro"
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(BASE_DIR, ".env"),

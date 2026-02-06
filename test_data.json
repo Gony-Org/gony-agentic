@@ -1,0 +1,196 @@
+{
+  "users": [
+    {
+      "id": "9ab624a2-d0c4-4dcd-8b22-a0b63c7dda68",
+      "email": "admin@gony.com",
+      "username": "admin",
+      "password": "$2a$10$j43zxOjOLg2Ci6JyATOvGe7PMCywO2saqCYO9L/FtepDZkO/aeeK.",
+      "created_at": "2026-02-06T18:51:20.57144+01:00",
+      "updated_at": "2026-02-06T18:51:20.57144+01:00"
+    },
+    {
+      "id": "90e0f532-193a-46dc-9eb0-500a31d99615",
+      "email": "user1@gony.com",
+      "username": "user1",
+      "password": "$2a$10$j43zxOjOLg2Ci6JyATOvGe7PMCywO2saqCYO9L/FtepDZkO/aeeK.",
+      "created_at": "2026-02-06T18:51:20.571441+01:00",
+      "updated_at": "2026-02-06T18:51:20.571441+01:00"
+    },
+    {
+      "id": "9b37e4ef-8432-4c56-ae43-4810a6f3ff74",
+      "email": "user2@gony.com",
+      "username": "user2",
+      "password": "$2a$10$dy3Oxw2XhhdyjSFiClYGxeokOIpoLcM3lHwdxEAP9xngZ.lEcLtGe",
+      "created_at": "2026-02-06T18:52:18.79746+01:00",
+      "updated_at": "2026-02-06T18:52:18.79746+01:00"
+    }
+  ],
+  "roles": [
+    {
+      "id": "1ece9d66-fd57-46e3-baad-239840794773",
+      "name": "guest",
+      "description": "Guest User",
+      "created_at": "2026-02-06T18:55:40.379312+01:00",
+      "updated_at": "2026-02-06T18:55:40.379312+01:00"
+    },
+    {
+      "id": "bafbedf9-8760-4f0d-ab5a-3cbeb6134311",
+      "name": "project_manager",
+      "description": "Project Manager",
+      "created_at": "2026-02-06T18:55:40.377762+01:00",
+      "updated_at": "2026-02-06T18:55:40.377762+01:00"
+    },
+    {
+      "id": "be79f7f9-d70d-44bf-a1e3-6a3dc36d3523",
+      "name": "developer",
+      "description": "Developer",
+      "created_at": "2026-02-06T18:55:40.378591+01:00",
+      "updated_at": "2026-02-06T18:55:40.378591+01:00"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "cc24c400-66ad-42a8-a938-2edbaf38e301",
+      "name": "view_tasks",
+      "resource": "tasks",
+      "action": "read",
+      "description": "Can view tasks",
+      "created_at": "2026-02-06T18:55:40.37609+01:00",
+      "updated_at": "2026-02-06T18:55:40.37609+01:00"
+    },
+    {
+      "id": "656882b7-fe46-4a13-bd4d-696bb1872596",
+      "name": "manage_projects",
+      "resource": "projects",
+      "action": "manage",
+      "description": "Full access to projects",
+      "created_at": "2026-02-06T18:55:40.374684+01:00",
+      "updated_at": "2026-02-06T18:55:40.374684+01:00"
+    },
+    {
+      "id": "8f854ade-2887-444f-9428-c01f9771d6a0",
+      "name": "create_tasks",
+      "resource": "tasks",
+      "action": "create",
+      "description": "Can create tasks",
+      "created_at": "2026-02-06T18:55:40.375439+01:00",
+      "updated_at": "2026-02-06T18:55:40.375439+01:00"
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "3ef80cbb-f30f-4ac3-8847-eb50946edf09",
+      "name": "Engineering",
+      "team_number": 10,
+      "type": "it",
+      "start_date": "2026-02-06T18:51:20.581981+01:00",
+      "due_date": "2027-02-06T18:51:20.581981+01:00",
+      "created_at": "2026-02-06T18:51:20.582191+01:00",
+      "updated_at": "2026-02-06T18:51:20.582191+01:00"
+    },
+    {
+      "id": "88136a58-896a-4735-afd4-b3b4c5f18ffb",
+      "name": "Marketing Campaign",
+      "team_number": 5,
+      "type": "marketing",
+      "start_date": "2026-02-06T18:52:18.807633+01:00",
+      "due_date": "2026-08-06T18:52:18.807633+01:00",
+      "created_at": "2026-02-06T18:52:18.807633+01:00",
+      "updated_at": "2026-02-06T18:52:18.807633+01:00"
+    }
+  ],
+  "projects": [
+    {
+      "id": "cbce3247-6c22-406e-be44-39caac09aedc",
+      "workspace_id": "3ef80cbb-f30f-4ac3-8847-eb50946edf09",
+      "name": "Backend Rewrite",
+      "lead_id": "90e0f532-193a-46dc-9eb0-500a31d99615",
+      "created_at": "2026-02-06T18:55:40.389409+01:00",
+      "updated_at": "2026-02-06T18:55:40.389409+01:00"
+    },
+    {
+      "id": "eb1fb8d9-3eff-403c-a947-b68d564943d5",
+      "workspace_id": "3ef80cbb-f30f-4ac3-8847-eb50946edf09",
+      "name": "Frontend Redesign",
+      "lead_id": "9b37e4ef-8432-4c56-ae43-4810a6f3ff74",
+      "created_at": "2026-02-06T18:55:40.392444+01:00",
+      "updated_at": "2026-02-06T18:55:40.392444+01:00"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "a2978d49-3b9f-4996-8fbe-98979cbd5756",
+      "project_id": "cbce3247-6c22-406e-be44-39caac09aedc",
+      "title": "Setup DB",
+      "description": "Install and configure PostgreSQL",
+      "status_id": "b6f31445-e852-498f-af86-ed6f102ee42d",
+      "status": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "name": "",
+        "color": "",
+        "created_at": "0001-01-01T00:00:00Z"
+      },
+      "created_at": "2026-02-06T18:55:40.394398+01:00",
+      "updated_at": "2026-02-06T18:55:40.394398+01:00"
+    },
+    {
+      "id": "9c593f47-3272-45f3-a4ee-ccf4d6b046d4",
+      "project_id": "cbce3247-6c22-406e-be44-39caac09aedc",
+      "title": "Create API",
+      "description": "Implement REST endpoints",
+      "status_id": "3837b043-829c-4e4a-82cb-12c37fe80991",
+      "status": {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "name": "",
+        "color": "",
+        "created_at": "0001-01-01T00:00:00Z"
+      },
+      "created_at": "2026-02-06T18:55:40.395932+01:00",
+      "updated_at": "2026-02-06T18:55:40.395932+01:00"
+    }
+  ],
+  "task_statuses": [
+    {
+      "id": "d1c42ebd-30f6-4702-b7ee-de6aa133af92",
+      "name": "To Do",
+      "color": "#FF0000",
+      "created_at": "2026-02-06T18:51:20.578876+01:00"
+    },
+    {
+      "id": "3837b043-829c-4e4a-82cb-12c37fe80991",
+      "name": "In Progress",
+      "color": "#FFFF00",
+      "created_at": "2026-02-06T18:51:20.578877+01:00"
+    },
+    {
+      "id": "b6f31445-e852-498f-af86-ed6f102ee42d",
+      "name": "Done",
+      "color": "#00FF00",
+      "created_at": "2026-02-06T18:51:20.578877+01:00"
+    }
+  ],
+  "folders": [
+    {
+      "id": "a4783a5b-6ef7-4131-9220-1a625dd5f60c",
+      "workspace_id": "3ef80cbb-f30f-4ac3-8847-eb50946edf09",
+      "name": "Docs",
+      "description": "Project Documentation",
+      "created_by": "90e0f532-193a-46dc-9eb0-500a31d99615",
+      "created_at": "2026-02-06T18:55:40.397537+01:00",
+      "updated_at": "2026-02-06T18:55:40.397537+01:00"
+    }
+  ],
+  "files": [
+    {
+      "id": "ee80a459-aa13-48fa-b36a-adaf5a5cfd7a",
+      "folder_id": "a4783a5b-6ef7-4131-9220-1a625dd5f60c",
+      "name": "specs.pdf",
+      "mime_type": "application/pdf",
+      "size": 102456,
+      "storage_path": "/uploads/specs.pdf",
+      "created_by": "90e0f532-193a-46dc-9eb0-500a31d99615",
+      "created_at": "2026-02-06T18:55:40.399837+01:00",
+      "updated_at": "2026-02-06T18:55:40.399837+01:00"
+    }
+  ]
+}

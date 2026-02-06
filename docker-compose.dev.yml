@@ -6,10 +6,9 @@ services:
     environment:
       - QDRANT_HOST=${QDRANT_HOST}
       - QDRANT_PORT=${QDRANT_PORT}
-      - NATS_URL=${NATS_URL}
+      - NATS_URL=nats://host.docker.internal:4222
     depends_on:
       - qdrant
-      - nats
     networks:
       - gony-network
 
@@ -20,14 +19,6 @@ services:
       - "${QDRANT_GRPC_PORT}:${QDRANT_GRPC_PORT}"
     volumes:
       - qdrant_storage:/qdrant/storage
-    networks:
-      - gony-network
-
-  nats:
-    image: nats:latest
-    ports:
-      - "${NATS_PORT}:${NATS_PORT}"
-      - "${NATS_HTTP_PORT}:${NATS_HTTP_PORT}"
     networks:
       - gony-network
 
