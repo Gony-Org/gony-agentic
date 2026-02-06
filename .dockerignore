@@ -30,5 +30,3 @@ dist
 # Ignore local ignore file
 .ignore
 
-# Lockfiles
-uv.lock
