@@ -30,6 +30,8 @@ htmlcov/
 # Environment files
 .env
 .env.*
+*.key
+secrets/
 
 # macOS
 .DS_Store
