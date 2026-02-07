@@ -40,4 +40,19 @@ class NatsService:
         except Exception as e:
             logging.error(f"Error publishing to {subject}: {e}")
 
+    async def request(self, subject: str, payload: str, timeout: int = 10) -> str:
+        try:
+            if not self.connected:
+                await self.connect()
+            
+            if self.connected:
+                response = await self.nc.request(subject, payload.encode(), timeout=timeout)
+                return response.data.decode()
+            else:
+                logging.error(f"Could not request {subject}: NATS not connected")
+                raise ConnectionError("NATS not connected")
+        except Exception as e:
+            logging.error(f"Error requesting {subject}: {e}")
+            raise e
+
 nats_service = NatsService()

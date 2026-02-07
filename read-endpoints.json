@@ -1,0 +1,382 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "description": "Get current user profile",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/UserResponse"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/roles",
+    "description": "Get all roles",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Role"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/roles/:id",
+    "description": "Get role by ID",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/Role"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/permissions",
+    "description": "Get all permissions",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Permission"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces",
+    "description": "Get all workspaces",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkspaceResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces/me",
+    "description": "Get my workspaces",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkspaceResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces/:id",
+    "description": "Get workspace by ID",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/WorkspaceResponse"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces/:id/users",
+    "description": "Get workspace users",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkspaceUser"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects",
+    "description": "Get all projects",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProjectResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/me",
+    "description": "Get my projects",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProjectResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/projects/:id",
+    "description": "Get project by ID",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/ProjectResponse"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/channels",
+    "description": "Get all channels",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Channel"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/channels/:id/messages",
+    "description": "Get channel messages",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MessageResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/folders",
+    "description": "Get my folders",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FolderResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/folders/:folder_id/files",
+    "description": "Get files in folder",
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileResponse"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/invites/:token",
+    "description": "Get invite info",
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/WorkspaceInvite"
+        }
+      }
+    }
+  }
+]

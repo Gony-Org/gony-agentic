@@ -13,7 +13,7 @@ from app.tools.api_client import call_crud_endpoint
 # Load context for instructions
 CRUD_CONTEXT: List[Dict[str, Any]] = []
 try:
-    context_path = settings.BASE_DIR / "crud-endpoints.json"
+    context_path = settings.BASE_DIR / "read-endpoints.json"
     if context_path.exists():
         with open(context_path, "r") as f:
             CRUD_CONTEXT = json.load(f)

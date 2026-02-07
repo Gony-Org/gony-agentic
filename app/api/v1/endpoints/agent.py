@@ -7,6 +7,20 @@ from app.agents.orchestrator import orchestrate_request
 from app.models.chat import AgentRequest, AgentResponse, ChatRole, ChatHistoryResponse
 from app.services.chat_storage import CassandraService
 from app.core.nats import nats_service
+from app.agents.logs_processing import run_periodic_log_analysis
+import asyncio
+import logging
+
+log_analysis_task = None
+
+async def log_analysis_loop():
+    while True:
+        try:
+            await run_periodic_log_analysis()
+        except Exception as e:
+            logging.error(f"Error in log analysis loop: {e}")
+        # Wait 10 minutes
+        await asyncio.sleep(600)
 
 router = APIRouter()
 cassandra_service = CassandraService() 
@@ -16,9 +30,21 @@ async def startup_event():
     # Attempt connection on startup (optional, helpful for dev)
     cassandra_service.connect()
     await nats_service.connect()
+    
+    # Start periodic log analysis
+    global log_analysis_task
+    log_analysis_task = asyncio.create_task(log_analysis_loop())
 
 @router.on_event("shutdown")
 async def shutdown_event():
+    global log_analysis_task
+    if log_analysis_task:
+        log_analysis_task.cancel()
+        try:
+            await log_analysis_task
+        except asyncio.CancelledError:
+            pass
+            
     await nats_service.close()
 
 @router.post("/query", response_model=AgentResponse)

@@ -5,6 +5,7 @@ from agno.team import Team
 from app.core.config import settings
 from app.agents.db_search_agent import db_search_agent
 from app.agents.document import document_agent
+from app.agents.logs_processing import logs_processing_agent
 from app.models.chat import ChatMessage, ChatRole
 
 # Orchestrator Team
@@ -24,6 +25,7 @@ orchestrator_team = Team(
     Your Team Members:
     1. **DB Search Agent**: Specialist in database queries and API data retrieval. capable of searching Projects, Tasks, Users, Workflows, etc.
     2. **Document Agent**: Specialist in finding and summarizing internal documents. Uses the Vector Store (Qdrant) and reads document content.
+    3. **Logs Processing Agent**: Specialist in system logs. Can analyze error patterns, performance issues, and historical log data to answer "Why" questions about system behavior.
 
     Your Goal:
     - Act as a helpful, intelligent colleague.
@@ -39,6 +41,7 @@ orchestrator_team = Team(
     2.  **Act**:
         - **If Data/State/Workflow Query**: You MUST delegate this to the **DB Search Agent**. Do not guess. You need the live data.
         - **If Document/Policy/Spec Query**: You MUST delegate this to the **Document Agent**.
+        - **If System Behavior/Error/Log Query**: You MUST delegate this to the **Logs Processing Agent** (e.g. "Why are users failing login?", "Audit tracking").
         - **If General/Greeting**: Respond politely and professionally as a colleague.
         - **If Unknown**: Ask for clarification within the context of project management.
 
@@ -51,7 +54,7 @@ orchestrator_team = Team(
     Tone: Professional, collaborative, and context-aware.
     """,
     markdown=True,
-    members=[db_search_agent, document_agent],
+    members=[db_search_agent, document_agent, logs_processing_agent],
 )
 
 # Wrapper function

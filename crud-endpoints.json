@@ -1,1146 +1,683 @@
 [
   {
-    "method": "GET",
-    "path": "/api/v1/auth/me",
-    "description": "Get current user profile",
-    "input": null,
+    "method": "POST",
+    "path": "/api/v1/auth/signup",
+    "description": "Register a new user",
+    "input": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["email", "username", "password"]
+    },
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "email": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
+        "success": { "type": "boolean" },
+        "message": { "type": "string" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "token": { "type": "string" },
+            "user": { "$ref": "#/definitions/UserResponse" }
+          }
         }
       }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/signin",
+    "description": "Login a user",
+    "input": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["email", "password"]
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "token": { "type": "string" },
+            "user": { "$ref": "#/definitions/UserResponse" }
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/signout",
+    "description": "Logout the current user",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/auth/me",
+    "description": "Get current user profile",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/UserResponse" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/roles",
     "description": "Get all roles",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/Role" } }
       }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/roles",
+    "description": "Create a new role",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name"]
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/Role" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/roles/:id",
     "description": "Get role by ID",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/Role" }
+      }
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/roles/:id",
+    "description": "Update role",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
       }
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/Role" }
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/roles/:id",
+    "description": "Delete role",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/permissions",
     "description": "Get all permissions",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "resource": {
-            "type": "string"
-          },
-          "action": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/permissions/:id",
-    "description": "Get permission by ID",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "resource": {
-          "type": "string"
-        },
-        "action": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/Permission" } }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
-    "method": "GET",
-    "path": "/api/v1/policies",
-    "description": "Get all policies",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        },
-        "description": "[subject, object, action]"
-      }
+    "method": "POST",
+    "path": "/api/v1/permissions",
+    "description": "Create permissions",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "resource": { "type": "string" },
+        "action": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "resource", "action"]
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/policies/user/:user_id/roles",
-    "description": "Get roles for a user",
-    "input": null,
     "output": {
-      "type": "array",
-      "items": {
-        "type": "string"
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/Permission" }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/policies/user/:user_id/policies",
-    "description": "Get policies for a user",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces",
     "description": "Get all workspaces",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "team_number": {
-            "type": "integer"
-          },
-          "type": {
-            "type": "string"
-          },
-          "start_date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "due_date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceResponse" } }
       }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/workspaces",
+    "description": "Create workspace",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "team_number": { "type": "integer" },
+        "type": { "type": "string" },
+        "start_date": { "type": "string" },
+        "due_date": { "type": "string" }
+      },
+      "required": ["name"]
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/WorkspaceResponse" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/me",
     "description": "Get my workspaces",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "team_number": {
-            "type": "integer"
-          },
-          "type": {
-            "type": "string"
-          },
-          "start_date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "due_date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceResponse" } }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/:id",
     "description": "Get workspace by ID",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "team_number": {
-          "type": "integer"
-        },
-        "type": {
-          "type": "string"
-        },
-        "start_date": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "due_date": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/WorkspaceResponse" }
+      }
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/workspaces/:id",
+    "description": "Update workspace",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "team_number": { "type": "integer" },
+        "type": { "type": "string" },
+        "start_date": { "type": "string" },
+        "due_date": { "type": "string" }
       }
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/WorkspaceResponse" }
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/workspaces/:id",
+    "description": "Delete workspace",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/workspaces/:id/users",
+    "description": "Add user to workspace",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["user_id"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/:id/users",
     "description": "Get workspace users",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "role": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceUser" } }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/projects",
     "description": "Get all projects",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "lead_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/ProjectResponse" } }
       }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/projects",
+    "description": "Create project",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "workspace_id": { "type": "string" },
+        "name": { "type": "string" },
+        "lead_id": { "type": "string" }
+      },
+      "required": ["workspace_id", "name"]
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/ProjectResponse" }
+      }
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/projects/me",
     "description": "Get my projects",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "lead_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/ProjectResponse" } }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/projects/:id",
     "description": "Get project by ID",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "workspace_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "lead_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/ProjectResponse" }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
-    "method": "GET",
-    "path": "/api/v1/workspaces/:workspace_id/projects",
-    "description": "Get projects in a workspace",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "lead_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
+    "method": "PUT",
+    "path": "/api/v1/projects/:id",
+    "description": "Update project",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "lead_id": { "type": "string" }
       }
     },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/tasks",
-    "description": "Get all tasks",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "project_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "status_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/tasks/me",
-    "description": "Get my tasks",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "project_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "status_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/tasks/:id",
-    "description": "Get task by ID",
-    "input": null,
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "project_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "status_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/ProjectResponse" }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
-    "method": "GET",
-    "path": "/api/v1/projects/:project_id/tasks",
-    "description": "Get tasks in a project",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "project_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "status_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/task-statuses",
-    "description": "Get task statuses",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "color": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/task-statuses/:id",
-    "description": "Get task status by ID",
-    "input": null,
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id",
+    "description": "Delete project",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "color": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
-    "path": "/api/v1/folders/me",
+    "path": "/api/v1/channels",
+    "description": "Get all channels",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/Channel" } }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/channels",
+    "description": "Create channel",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/Channel" }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/channels/:id/messages",
+    "description": "Send message to channel",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "content": { "type": "string" }
+      },
+      "required": ["content"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/MessageResponse" }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/channels/:id/messages",
+    "description": "Get channel messages",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/MessageResponse" } }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/files/upload",
+    "description": "Upload file to folder",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "folder_id": { "type": "string" },
+        "file": { "type": "string", "format": "binary" }
+      },
+      "required": ["folder_id", "file"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/FileResponse" }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/files",
+    "description": "Create file metadata",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "folder_id": { "type": "string" },
+        "name": { "type": "string" },
+        "mime_type": { "type": "string" },
+        "size": { "type": "integer" }
+      },
+      "required": ["folder_id", "name"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/FileResponse" }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/folders",
     "description": "Get my folders",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "created_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/folders/:id",
-    "description": "Get folder by ID",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "workspace_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "parent_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "created_by": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/FolderResponse" } }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/folders/:id/shares",
-    "description": "Get folder shares",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "permission": {
-            "type": "string"
-          },
-          "shared_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/workspaces/:workspace_id/folders",
-    "description": "Get folders in workspace",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "created_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/files/me",
-    "description": "Get my files",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "folder_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "mime_type": {
-            "type": "string"
-          },
-          "size": {
-            "type": "integer"
-          },
-          "created_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/files/:id",
-    "description": "Get file details",
-    "input": null,
-    "output": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "folder_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "mime_type": {
-          "type": "string"
-        },
-        "size": {
-          "type": "integer"
-        },
-        "created_by": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/files/:id/download",
-    "description": "Download file content",
-    "input": null,
-    "output": {
-      "type": "string",
-      "description": "Binary file stream"
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/files/:id/shares",
-    "description": "Get file shares",
-    "input": null,
-    "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "permission": {
-            "type": "string"
-          },
-          "shared_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/folders/:folder_id/files",
     "description": "Get files in folder",
-    "input": null,
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {},
     "output": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "folder_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "mime_type": {
-            "type": "string"
-          },
-          "size": {
-            "type": "integer"
-          },
-          "created_by": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/FileResponse" } }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/tasks",
+    "description": "Create task",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "project_id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status_id": { "type": "string" },
+        "assigned_users": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["project_id", "title"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/TaskResponse" }
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/tasks/:id/status",
+    "description": "Update task status",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "status_id": { "type": "string" }
+      },
+      "required": ["status_id"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/TaskResponse" }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/invites/:token",
+    "description": "Get invite info",
+    "input": {},
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": { "$ref": "#/definitions/WorkspaceInvite" }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/invites/:token/accept",
+    "description": "Accept invite",
+    "headers": { "Authorization": { "type": "string" } },
+    "input": {
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/upload",
+    "description": "Public upload (MinIO)",
+    "input": {
+      "type": "object",
+      "properties": {
+        "file": { "type": "string", "format": "binary" }
+      },
+      "required": ["file"]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "url": { "type": "string" },
+            "filename": { "type": "string" },
+            "size": { "type": "integer" }
           }
         }
       }
-    },
-    "headers": {
-      "Authorization": "Bearer <token>"
     }
   }
 ]
