@@ -100,10 +100,26 @@ async def query_agent(payload: AgentRequest, request: Request):
             session_name=session_name
         )
 
-        # Publish to NATS
+        # Publish to NATS (Inbox)
         nats_subject = f"user.{payload.user_id}.inbox"
         await nats_service.publish(nats_subject, agent_content_text)
         
+        # Publish Audit Log
+        import json
+        audit_payload = {
+            "resource": "agent_interaction",
+            "action": "query",
+            "userId": payload.user_id,
+            "role": "user", # Defaulting as we don't extract it from token yet
+            "workspaceId": None, # Defaulting as we don't have it
+            "metadata": json.dumps({
+                "ip": request.client.host if request.client else "unknown",
+                "userAgent": request.headers.get("user-agent"),
+                "sessionId": session_id
+            })
+        }
+        await nats_service.publish("logs.trace", json.dumps(audit_payload))
+
         # 8. Return Final Response Model
         return AgentResponse(
             status=status,
