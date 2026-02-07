@@ -1,3 +1,4 @@
+from app.core.context import auth_token_context
 import httpx
 from typing import Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
@@ -26,11 +27,17 @@ async def call_crud_endpoint(
         JSON response from the API or error details.
     """
     try:
+        # Injected Authorization
+        req_headers = headers or {}
+        token = auth_token_context.get()
+        if token:
+             req_headers["Authorization"] = token
+
         async with httpx.AsyncClient() as client:
             response = await client.request(
                 method=method,
                 url=url,
-                headers=headers,
+                headers=req_headers,
                 json=json_body,
                 params=params,
                 timeout=30.0

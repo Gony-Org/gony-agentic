@@ -2,11 +2,13 @@ services:
   app:
     build: .
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${APP_PORT}:8001"
     environment:
       - QDRANT_HOST=${QDRANT_HOST}
       - QDRANT_PORT=${QDRANT_PORT}
       - NATS_URL=nats://host.docker.internal:4222
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GOOGLE_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - qdrant
     networks:

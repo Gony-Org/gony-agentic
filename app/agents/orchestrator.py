@@ -4,14 +4,16 @@ from agno.models.google import Gemini
 from agno.team import Team
 from app.core.config import settings
 from app.agents.db_search_agent import db_search_agent
+from app.agents.document import document_agent
 from app.models.chat import ChatMessage, ChatRole
 
 # Orchestrator Team
 # Uses the 'Supervisor' pattern where the Team leader (model) delegates to members 
 # and synthesizes their responses.
 
-team_leader = Agent(
-    name="Team Leader",
+# The Team itself acts as the leader.
+orchestrator_team = Team(
+    name="Gony Orchestrator Team",
     role="Virtual Colleague & Project Manager",
     model=Gemini(id=settings.GEMINI_MODEL, api_key=settings.GEMINI_API_KEY),
     # No external intent tool needed; reasoning is internal.
@@ -21,6 +23,7 @@ team_leader = Agent(
     
     Your Team Members:
     1. **DB Search Agent**: Specialist in database queries and API data retrieval. capable of searching Projects, Tasks, Users, Workflows, etc.
+    2. **Document Agent**: Specialist in finding and summarizing internal documents. Uses the Vector Store (Qdrant) and reads document content.
 
     Your Goal:
     - Act as a helpful, intelligent colleague.
@@ -35,6 +38,7 @@ team_leader = Agent(
     
     2.  **Act**:
         - **If Data/State/Workflow Query**: You MUST delegate this to the **DB Search Agent**. Do not guess. You need the live data.
+        - **If Document/Policy/Spec Query**: You MUST delegate this to the **Document Agent**.
         - **If General/Greeting**: Respond politely and professionally as a colleague.
         - **If Unknown**: Ask for clarification within the context of project management.
 
@@ -47,14 +51,7 @@ team_leader = Agent(
     Tone: Professional, collaborative, and context-aware.
     """,
     markdown=True,
-    show_tool_calls=True
-)
-
-orchestrator_team = Team(
-    name="Gony Orchestrator Team",
-    team_leader=team_leader,
-    members=[db_search_agent],
-    show_tool_calls=True
+    members=[db_search_agent, document_agent],
 )
 
 # Wrapper function
@@ -85,7 +82,7 @@ async def orchestrate_request(user_id: str, query: str, history: Optional[List[C
             full_input = query
 
         # Run the team
-        response = orchestrator_team.run(full_input)
+        response = await orchestrator_team.arun(full_input)
         
         return {
             "orchestrator_status": "success",

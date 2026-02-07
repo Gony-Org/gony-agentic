@@ -28,3 +28,11 @@ class AgentResponse(BaseModel):
     message: str
     session_id: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class ChatSession(BaseModel):
+    session_id: str
+    session_name: Optional[str] = None
+    updated_at: datetime
+
+class ChatHistoryResponse(BaseModel):
+    sessions: List[ChatSession]

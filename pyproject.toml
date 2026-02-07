@@ -17,5 +17,6 @@ dependencies = [
     "uvicorn>=0.40.0",
     "fastmcp>=2.14.5",
     "cassandra-driver>=3.29.0",
+    "google-genai>=1.0.0",
     "cqlengine>=0.21.0",
 ]

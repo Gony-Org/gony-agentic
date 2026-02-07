@@ -26,6 +26,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -58,6 +61,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -87,6 +93,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -125,6 +134,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -160,6 +172,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -176,6 +191,9 @@
         },
         "description": "[subject, object, action]"
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -188,6 +206,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -203,6 +224,9 @@
           "type": "string"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -246,6 +270,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -289,6 +316,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -329,6 +359,45 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces/:id/users",
+    "description": "Get workspace users",
+    "input": null,
+    "output": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -366,6 +435,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -403,6 +475,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -437,6 +512,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -474,6 +552,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -514,6 +595,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -554,6 +638,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -591,6 +678,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -631,6 +721,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -659,6 +752,37 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/task-statuses/:id",
+    "description": "Get task status by ID",
+    "input": null,
+    "output": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -703,6 +827,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -744,6 +871,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -777,6 +907,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -821,6 +954,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -864,6 +1000,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -904,6 +1043,9 @@
           "format": "date-time"
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -914,6 +1056,9 @@
     "output": {
       "type": "string",
       "description": "Binary file stream"
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -947,6 +1092,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   },
   {
@@ -990,6 +1138,9 @@
           }
         }
       }
+    },
+    "headers": {
+      "Authorization": "Bearer <token>"
     }
   }
 ]

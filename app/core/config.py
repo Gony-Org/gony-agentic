@@ -2,12 +2,12 @@ import os
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 class Settings(BaseSettings):
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     PROJECT_NAME: str = "Gony Agentic"
     VERSION: str = "0.1.0"
     API_V1_STR: str = "/api/v1"
+    APP_PORT: int = 8001
 
     # Infrastructure
     QDRANT_HOST: str = "localhost"
@@ -27,10 +27,10 @@ class Settings(BaseSettings):
 
     # Gemini
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-pro"
+    GEMINI_MODEL: str = "gemini-3-pro-preview"
 
     model_config = SettingsConfigDict(
-        env_file=os.path.join(BASE_DIR, ".env"),
+        env_file=os.path.join(str(Path(__file__).resolve().parent.parent.parent), ".env"),
         env_file_encoding="utf-8",
         extra="ignore"
     )

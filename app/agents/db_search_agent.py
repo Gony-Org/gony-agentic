@@ -65,5 +65,4 @@ db_search_agent = Agent(
     - Do NOT try to be a chatbot. Just report the facts/data/errors for the Team Leader to synthesize.
     """,
     markdown=True,
-    show_tool_calls=True
 )
