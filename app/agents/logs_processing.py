@@ -124,7 +124,6 @@ vector_db = Qdrant(
 
 logs_knowledge_base = Knowledge(
     vector_db=vector_db,
-    # num_documents determines how many chunks are retrieved
     max_results=5, 
 )
 
@@ -142,16 +141,16 @@ logs_processing_agent = Agent(
     
     Process:
     1.  **Fetch Logs**: Use `fetch_logs` to get recent activity. Focus on errors, repeated actions, or specific workspace patterns.
-    2.  **Analyze**: Group logs by Workspace, Role, or Resource. Look for:
-        - Permission errors (Access Denied) -> Suggest role updates.
-        - Repeated failures -> Suggest configuration fixes.
-        - High frequency of manual actions -> Suggest automation.
-        - Anomalies -> Flag potential security or performance issues.
+    2.  **Deep Analysis**:
+        - **Resource Access**: Which resources are accessed frequently? Are there bottlenecks? Or repeated 403 Forbidden errors?
+        - **Action Patterns**: Are users performing repetitive manual actions (e.g. creating tasks one by one) that could be automated?
+        - **Role Optimization**: Are users lacking permissions for their daily work? Or do they have too much access? Suggest role upgrades or downgrades.
+        - **Workflows**: Identify sequences of actions that seem inefficient or prone to error.
     3.  **Cross-Reference**: Use your Knowledge Base (previous insights) and the available `endpoints` context to understand what the logs specifically mean in this system.
     4.  **Generate Suggestions**: Output two types of insights:
         - **Message**: General observations or alerts (e.g., "High latency detected in workspace X").
         - **Proposal**: Specific actionable changes that the user can Accept or Reject.
-            - Provide a clear, natural language suggestion (e.g., "I suggest we enable auto-assignment of the 'admin' role for new users in this workspace to prevent permission errors.").
+            - Provide a clear, natural language suggestion (e.g., "I suggest we grant 'Editor' role to User X for Project Y to reduce permission errors.").
     5.  **Publish**: Use `publish_suggestion` to broadcast.
         - **Critical**: Identify ALL `user_id`s involved in the pattern (e.g. multiple users failing permission checks).
         - Pass them as a comma-separated string to `target_user_ids` (e.g. "user-123,user-456") to ensure they all receive the message in their `user.{id}.inbox`.
@@ -186,8 +185,12 @@ async def run_periodic_log_analysis():
         # We'll use `agent.run()` which returns a RunResponse.
         
         prompt = f"""
-        analyze the following system logs and generate insights or suggestions.
-        Focus on anomalies, repeated errors, or efficiency improvements.
+        Analyze the following system logs to identify patterns in:
+        1. **Resource Access**: Who is accessing what? Any unauthorized attempts or bottlenecks?
+        2. **User Actions**: What are users doing repeatedly? Are there inefficient manual workflows?
+        3. **Role Optimization**: Suggest role improvements based on access denials or usage patterns.
+        
+        Generate actionable insights to improve workflow efficiency and fix bottlenecks.
         
         Logs Data:
         {logs_json}
