@@ -1,683 +1,806 @@
 [
+  // --- AUTH ---
   {
     "method": "POST",
     "path": "/api/v1/auth/signup",
     "description": "Register a new user",
+    "headers": [],
     "input": {
-      "type": "object",
-      "properties": {
-        "email": { "type": "string" },
-        "username": { "type": "string" },
-        "password": { "type": "string" }
-      },
-      "required": ["email", "username", "password"]
+      "email": "string",
+      "username": "string",
+      "password": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" },
-        "data": {
-          "type": "object",
-          "properties": {
-            "token": { "type": "string" },
-            "user": { "$ref": "#/definitions/UserResponse" }
-          }
-        }
+      "token": "string",
+      "user": {
+        "id": "string",
+        "email": "string",
+        "username": "string",
+        "created_at": "string",
+        "updated_at": "string"
       }
     }
   },
   {
     "method": "POST",
     "path": "/api/v1/auth/signin",
-    "description": "Login a user",
+    "description": "Authenticate user and get token",
+    "headers": [],
     "input": {
-      "type": "object",
-      "properties": {
-        "email": { "type": "string" },
-        "password": { "type": "string" }
-      },
-      "required": ["email", "password"]
+      "email": "string",
+      "password": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" },
-        "data": {
-          "type": "object",
-          "properties": {
-            "token": { "type": "string" },
-            "user": { "$ref": "#/definitions/UserResponse" }
-          }
-        }
+      "token": "string",
+      "user": {
+        "id": "string",
+        "email": "string",
+        "username": "string",
+        "created_at": "string",
+        "updated_at": "string"
       }
     }
   },
   {
     "method": "POST",
     "path": "/api/v1/auth/signout",
-    "description": "Logout the current user",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "description": "Sign out current user",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
+      "message": "success"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/auth/me",
     "description": "Get current user profile",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/UserResponse" }
-      }
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/roles",
-    "description": "Get all roles",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/Role" } }
-      }
+      "id": "string",
+      "email": "string",
+      "username": "string",
+      "created_at": "string",
+      "updated_at": "string"
     }
   },
   {
     "method": "POST",
-    "path": "/api/v1/roles",
-    "description": "Create a new role",
-    "headers": { "Authorization": { "type": "string" } },
+    "path": "/api/v1/auth/make-admin",
+    "description": "Promote user to global admin (admin only)",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" }
-      },
-      "required": ["name"]
+      "user_id": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/Role" }
-      }
+      "message": "success"
+    }
+  },
+  // --- INVITES ---
+  {
+    "method": "GET",
+    "path": "/api/v1/invites/:token",
+    "description": "Get information about an invite token",
+    "headers": [],
+    "input": null,
+    "output": {
+      "email": "string",
+      "workspace_name": "string",
+      "invited_by": "string"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/invites/:token/accept",
+    "description": "Accept an invite to join a workspace",
+    "headers": [],
+    "input": null,
+    "output": {
+      "message": "success"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/workspaces/:id/invites",
+    "description": "Invite users to a workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "emails": [
+        "string"
+      ],
+      "role": "string"
+    },
+    "output": {
+      "message": "invites sent"
     }
   },
   {
     "method": "GET",
-    "path": "/api/v1/roles/:id",
-    "description": "Get role by ID",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/Role" }
+    "path": "/api/v1/workspaces/:id/invites",
+    "description": "Get pending invites for a workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "email": "string",
+        "role": "string",
+        "expires_at": "string"
       }
-    }
-  },
-  {
-    "method": "PUT",
-    "path": "/api/v1/roles/:id",
-    "description": "Update role",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "description": { "type": "string" }
-      }
-    },
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/Role" }
-      }
-    }
+    ]
   },
   {
     "method": "DELETE",
-    "path": "/api/v1/roles/:id",
-    "description": "Delete role",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "path": "/api/v1/workspaces/:id/invites/:invite_id",
+    "description": "Cancel a pending invite",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
+      "message": "invite cancelled"
     }
   },
-  {
-    "method": "GET",
-    "path": "/api/v1/permissions",
-    "description": "Get all permissions",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/Permission" } }
-      }
-    }
-  },
+  // --- WORKSPACES ---
   {
     "method": "POST",
-    "path": "/api/v1/permissions",
-    "description": "Create permissions",
-    "headers": { "Authorization": { "type": "string" } },
+    "path": "/api/v1/workspaces",
+    "description": "Create a new workspace",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "resource": { "type": "string" },
-        "action": { "type": "string" },
-        "description": { "type": "string" }
-      },
-      "required": ["name", "resource", "action"]
+      "name": "string",
+      "team_number": 0,
+      "type": "string",
+      "start_date": "string (YYYY-MM-DD)",
+      "due_date": "string (YYYY-MM-DD)"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/Permission" }
-      }
+      "id": "string",
+      "name": "string",
+      "team_number": 0,
+      "type": "string"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces",
-    "description": "Get all workspaces",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceResponse" } }
+    "description": "Get all workspaces (admin/superadmin)",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
-    }
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/workspaces",
-    "description": "Create workspace",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "team_number": { "type": "integer" },
-        "type": { "type": "string" },
-        "start_date": { "type": "string" },
-        "due_date": { "type": "string" }
-      },
-      "required": ["name"]
-    },
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/WorkspaceResponse" }
-      }
-    }
+    ]
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/me",
-    "description": "Get my workspaces",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceResponse" } }
+    "description": "Get workspaces for current user",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
-    }
+    ]
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/:id",
-    "description": "Get workspace by ID",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "description": "Get workspace details",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/WorkspaceResponse" }
-      }
+      "id": "string",
+      "name": "string",
+      "users": [],
+      "projects": []
     }
   },
   {
     "method": "PUT",
     "path": "/api/v1/workspaces/:id",
-    "description": "Update workspace",
-    "headers": { "Authorization": { "type": "string" } },
+    "description": "Update workspace details",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "team_number": { "type": "integer" },
-        "type": { "type": "string" },
-        "start_date": { "type": "string" },
-        "due_date": { "type": "string" }
-      }
+      "name": "string",
+      "team_number": 0
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/WorkspaceResponse" }
-      }
+      "id": "string",
+      "name": "string"
     }
   },
   {
     "method": "DELETE",
     "path": "/api/v1/workspaces/:id",
-    "description": "Delete workspace",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "description": "Delete a workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
+      "message": "workspace deleted"
     }
   },
   {
     "method": "POST",
     "path": "/api/v1/workspaces/:id/users",
-    "description": "Add user to workspace",
-    "headers": { "Authorization": { "type": "string" } },
+    "description": "Add user to workspace directly",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "user_id": { "type": "string" },
-        "role": { "type": "string" }
-      },
-      "required": ["user_id"]
+      "user_id": "string",
+      "role": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
+      "message": "user added"
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/workspaces/:id/users/:user_id",
+    "description": "Remove user from workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": {
+      "message": "user removed"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/workspaces/:id/users",
-    "description": "Get workspace users",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/WorkspaceUser" } }
+    "description": "Get users in workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "user_id": "string",
+        "role": "string"
       }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/workspaces/:id/available-roles",
+    "description": "Get available roles in workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      "string"
+    ]
+  },
+  // --- PROJECTS ---
+  {
+    "method": "POST",
+    "path": "/api/v1/projects",
+    "description": "Create a new project",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "workspace_id": "string",
+      "name": "string",
+      "lead_id": "string"
+    },
+    "output": {
+      "id": "string",
+      "name": "string"
     }
   },
   {
     "method": "GET",
     "path": "/api/v1/projects",
     "description": "Get all projects",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/ProjectResponse" } }
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
-    }
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/projects",
-    "description": "Create project",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "workspace_id": { "type": "string" },
-        "name": { "type": "string" },
-        "lead_id": { "type": "string" }
-      },
-      "required": ["workspace_id", "name"]
-    },
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/ProjectResponse" }
-      }
-    }
+    ]
   },
   {
     "method": "GET",
     "path": "/api/v1/projects/me",
-    "description": "Get my projects",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/ProjectResponse" } }
+    "description": "Get projects assigned to current user",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
-    }
+    ]
   },
   {
     "method": "GET",
     "path": "/api/v1/projects/:id",
-    "description": "Get project by ID",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "description": "Get project details",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/ProjectResponse" }
-      }
+      "id": "string",
+      "name": "string",
+      "tasks": []
     }
   },
   {
     "method": "PUT",
     "path": "/api/v1/projects/:id",
     "description": "Update project",
-    "headers": { "Authorization": { "type": "string" } },
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "lead_id": { "type": "string" }
-      }
+      "name": "string",
+      "lead_id": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/ProjectResponse" }
-      }
+      "id": "string",
+      "name": "string"
     }
   },
   {
     "method": "DELETE",
     "path": "/api/v1/projects/:id",
     "description": "Delete project",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/channels",
-    "description": "Get all channels",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/Channel" } }
-      }
+      "message": "project deleted"
     }
   },
   {
     "method": "POST",
-    "path": "/api/v1/channels",
-    "description": "Create channel",
-    "headers": { "Authorization": { "type": "string" } },
+    "path": "/api/v1/projects/:id/users",
+    "description": "Assign user to project",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" }
-      },
-      "required": ["name"]
+      "user_id": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/Channel" }
-      }
+      "message": "user assigned"
     }
   },
   {
-    "method": "POST",
-    "path": "/api/v1/channels/:id/messages",
-    "description": "Send message to channel",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "content": { "type": "string" }
-      },
-      "required": ["content"]
-    },
+    "method": "DELETE",
+    "path": "/api/v1/projects/:id/users/:user_id",
+    "description": "Remove user from project",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/MessageResponse" }
-      }
+      "message": "user removed"
     }
   },
   {
     "method": "GET",
-    "path": "/api/v1/channels/:id/messages",
-    "description": "Get channel messages",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/MessageResponse" } }
+    "path": "/api/v1/workspaces/:workspace_id/projects",
+    "description": "Get projects by workspace",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
-    }
+    ]
   },
-  {
-    "method": "POST",
-    "path": "/api/v1/files/upload",
-    "description": "Upload file to folder",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "folder_id": { "type": "string" },
-        "file": { "type": "string", "format": "binary" }
-      },
-      "required": ["folder_id", "file"]
-    },
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/FileResponse" }
-      }
-    }
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/files",
-    "description": "Create file metadata",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {
-      "type": "object",
-      "properties": {
-        "folder_id": { "type": "string" },
-        "name": { "type": "string" },
-        "mime_type": { "type": "string" },
-        "size": { "type": "integer" }
-      },
-      "required": ["folder_id", "name"]
-    },
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/FileResponse" }
-      }
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/folders",
-    "description": "Get my folders",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/FolderResponse" } }
-      }
-    }
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/folders/:folder_id/files",
-    "description": "Get files in folder",
-    "headers": { "Authorization": { "type": "string" } },
-    "input": {},
-    "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/FileResponse" } }
-      }
-    }
-  },
+  // --- TASKS ---
   {
     "method": "POST",
     "path": "/api/v1/tasks",
-    "description": "Create task",
-    "headers": { "Authorization": { "type": "string" } },
+    "description": "Create a new task",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "project_id": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "status_id": { "type": "string" },
-        "assigned_users": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["project_id", "title"]
+      "project_id": "string",
+      "title": "string",
+      "description": "string",
+      "status_id": "string",
+      "assigned_users": [
+        "string"
+      ]
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/TaskResponse" }
+      "id": "string",
+      "title": "string"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "description": "Get all tasks",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "title": "string"
       }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks/me",
+    "description": "Get tasks assigned to current user",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "title": "string"
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks/:id",
+    "description": "Get task details",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": {
+      "id": "string",
+      "title": "string",
+      "status": {}
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/tasks/:id",
+    "description": "Update task",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "title": "string",
+      "description": "string",
+      "status_id": "string",
+      "assigned_users": [
+        "string"
+      ]
+    },
+    "output": {
+      "id": "string",
+      "title": "string"
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/tasks/:id",
+    "description": "Delete task",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": {
+      "message": "task deleted"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/tasks/:id/assign",
+    "description": "Assign user to task",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "user_id": "string"
+    },
+    "output": {
+      "message": "user assigned"
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/tasks/:id/assign/:user_id",
+    "description": "Unassign user from task",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": {
+      "message": "user unassigned"
     }
   },
   {
     "method": "PATCH",
     "path": "/api/v1/tasks/:id/status",
     "description": "Update task status",
-    "headers": { "Authorization": { "type": "string" } },
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "status_id": { "type": "string" }
-      },
-      "required": ["status_id"]
+      "status_id": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/TaskResponse" }
-      }
+      "id": "string",
+      "status_id": "string"
     }
   },
   {
     "method": "GET",
-    "path": "/api/v1/invites/:token",
-    "description": "Get invite info",
-    "input": {},
+    "path": "/api/v1/projects/:project_id/tasks",
+    "description": "Get tasks by project",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "title": "string"
+      }
+    ]
+  },
+
+  {
+    "method": "POST",
+    "path": "/api/v1/files/upload",
+    "description": "Upload a file to MinIO",
+    "headers": [
+      "Authorization",
+      "Content-Type: multipart/form-data"
+    ],
+    "input": {
+      "file": "file_binary",
+      "folder_id": "string"
+    },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": { "$ref": "#/definitions/WorkspaceInvite" }
+      "success": true,
+      "data": {
+        "url": "string"
       }
     }
   },
   {
     "method": "POST",
-    "path": "/api/v1/invites/:token/accept",
-    "description": "Accept invite",
-    "headers": { "Authorization": { "type": "string" } },
+    "path": "/api/v1/folders",
+    "description": "Create a folder",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "token": { "type": "string" }
-      }
+      "workspace_id": "string",
+      "parent_id": "string",
+      "name": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
-      }
+      "id": "string",
+      "name": "string"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/files/:id/download",
+    "description": "Get file download URL",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": {
+      "url": "string",
+      "filename": "string"
     }
   },
   {
     "method": "POST",
-    "path": "/api/v1/upload",
-    "description": "Public upload (MinIO)",
+    "path": "/api/v1/files/:id/share",
+    "description": "Share file with user",
+    "headers": [
+      "Authorization"
+    ],
     "input": {
-      "type": "object",
-      "properties": {
-        "file": { "type": "string", "format": "binary" }
-      },
-      "required": ["file"]
+      "user_id": "string",
+      "permission": "string"
     },
     "output": {
-      "type": "object",
-      "properties": {
-        "success": { "type": "boolean" },
-        "data": {
-          "type": "object",
-          "properties": {
-            "url": { "type": "string" },
-            "filename": { "type": "string" },
-            "size": { "type": "integer" }
-          }
+      "message": "file shared"
+    }
+  },
+  // --- FLOWS ---
+  {
+    "method": "POST",
+    "path": "/api/v1/flows",
+    "description": "Create approval flow",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "file_id": "string",
+      "steps": [
+        {
+          "user_id": "string",
+          "task_description": "string"
         }
+      ]
+    },
+    "output": {
+      "id": "string",
+      "status": "pending"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/flows/steps/:token/complete",
+    "description": "Complete flow step (Public)",
+    "headers": [],
+    "input": null,
+    "output": "HTML Page"
+  },
+  // --- CHANNELS ---
+  {
+    "method": "POST",
+    "path": "/api/v1/channels",
+    "description": "Create channel",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "name": "string",
+      "workspace_id": "string"
+    },
+    "output": {
+      "id": "string",
+      "name": "string"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/channels",
+    "description": "Get all channels",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "name": "string"
       }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/channels/:id/messages",
+    "description": "Send message",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "content": "string"
+    },
+    "output": {
+      "id": "string",
+      "content": "string"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/channels/:id/messages",
+    "description": "Get channel messages",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": [
+      {
+        "id": "string",
+        "content": "string"
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/ws/:channel_id",
+    "description": "WebSocket endpoint",
+    "headers": [
+      "Authorization"
+    ],
+    "input": null,
+    "output": "WebSocket Upgrade"
+  },
+  // --- POLICIES ---
+  {
+    "method": "POST",
+    "path": "/api/v1/policies",
+    "description": "Add policy (admin)",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "subject": "string",
+      "object": "string",
+      "action": "string"
+    },
+    "output": {
+      "message": "policy added"
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/policies",
+    "description": "Remove policy (admin)",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "subject": "string",
+      "object": "string",
+      "action": "string"
+    },
+    "output": {
+      "message": "policy removed"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/policies/check",
+    "description": "Check permission",
+    "headers": [
+      "Authorization"
+    ],
+    "input": {
+      "subject": "string",
+      "object": "string",
+      "action": "string"
+    },
+    "output": {
+      "allowed": true
     }
   }
 ]
