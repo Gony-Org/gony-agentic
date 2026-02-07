@@ -12,26 +12,21 @@ The system follows a **Hub-and-Spoke** agentic architecture where a central **Or
 
 ```mermaid
 graph TD
-    User[User / Frontend] -->|REST API| API[FastAPI /query]
-    API --> Orchestrator
+    User([Chat Interface]) <--> API[FastAPI Gateway]
     
-    subgraph "Agent Team"
-        Orchestrator[Orchestrator Agent]
-        DBAgent[DB Search Agent]
-        DocAgent[Document Agent]
-        LogsAgent[Logs Processing Agent]
+    subgraph AgentRuntime [Agent Runtime]
+        API --> Orchestrator[Orchestrator Agent]
+        Orchestrator <-->|Delegates| DBAgent[DB Search Agent]
+        Orchestrator <-->|Delegates| DocAgent[Document Agent]
+        Orchestrator <-->|Delegates| LogsAgent[Logs Processing Agent]
     end
     
-    Orchestrator -->|Delegates| DBAgent
-    Orchestrator -->|Delegates| DocAgent
-    Orchestrator -->|Delegates| LogsAgent
-    
-    DBAgent -->|CRUD API| ExternalAPI[Core Backend API]
-    DocAgent -->|Vector Search| Qdrant[Qdrant (Vectors)]
-    LogsAgent -->|NATS| NATS[NATS Broker]
-    
-    NATS -->|Logs Stream| LogsAgent
-    LogsAgent -->|Suggestions| NATS
+    subgraph ExternalSystems [External Systems]
+        DBAgent -->|HTTP GET| CoreBackend[Core CRUD API]
+        DocAgent -->|Vector Search| QdrantNode[Qdrant DB]
+        LogsAgent -->|Pub/Sub| NATSNode[NATS Broker]
+        LogsAgent -->|Vector Storing| QdrantNode
+    end
 ```
 
 ---
@@ -43,6 +38,23 @@ graph TD
 *   **Responsibility**: The user-facing interface. It receives natural language queries, understands intent, delegates work to the specialist agents, and synthesizes the final friendly response.
 *   **Persona**: Warm, professional, non-technical. Handles errors gracefully (e.g., interprets "404 Not Found" as "Free Schedule").
 
+**Logic Flow**:
+```mermaid
+flowchart TD
+    start([User Query]) --> classification{Intent Classification}
+    
+    classification -->|Small Talk| direct[Direct Response]
+    classification -->|Data Query| delegate_db[Delegate to DB Agent]
+    classification -->|Knowledge Query| delegate_doc[Delegate to Document Agent]
+    classification -->|System Health| delegate_logs[Delegate to Logs Agent]
+    
+    delegate_db --> synth[Synthesize Response]
+    delegate_doc --> synth
+    delegate_logs --> synth
+    direct --> output([Final Answer])
+    synth --> output
+```
+
 ### 2. DB Search Agent (The "Data Specialist")
 *   **Role**: Database & API Specialist.
 *   **Responsibility**: Fetching structured data (Projects, Tasks, Users, Workflows) from the Core Backend.
@@ -51,12 +63,36 @@ graph TD
     *   `call_crud_endpoint(method, url)`: Execute GET requests against the `CRUD_API_URL` to retrieve live data.
 *   **Knowledge**: Has access to `crud-endpoints.json` context to map user questions to specific API endpoints.
 
+**Sequence**:
+```mermaid
+sequenceDiagram
+    participant Orch as Orchestrator
+    participant DB as DB Agent
+    participant ExtAPI as External CRUD API
+    
+    Orch->>DB: "Find my tasks for this month"
+    Note over DB: Analyze 'read-endpoints.json'
+    DB->>DB: Select GET /tasks
+    DB->>ExtAPI: GET /tasks?userId=123
+    ExtAPI-->>DB: JSON Response
+    DB-->>Orch: "Found 5 tasks: [task details...]"
+```
+
 ### 3. Document Agent (The "Librarian")
 *   **Role**: Knowledge Base Specialist (RAG).
 *   **Responsibility**: Answering questions based on unstructured documents (PDFs, Wikis, Guidelines) stored in the Vector Database.
 *   **Tools**:
     *   `fetch_document_content(url)`: Retrieves the full text of a document found via search.
 *   **Knowledge**: Connected to **Qdrant** (`documents` collection) to perform semantic search on company knowledge.
+
+**Pipeline**:
+```mermaid
+flowchart LR
+    query([Query]) --> embed[Generate Embedding]
+    embed --> search[Qdrant Vector Search]
+    search -->|Top 5 Contexts| synthesis[LLM Synthesis]
+    synthesis --> answer([Generated Answer])
+```
 
 ### 4. Logs Processing Agent (The "System Analyst")
 *   **Role**: Autonomous Log Analyst & Consultant.
@@ -70,23 +106,101 @@ graph TD
     3.  Generates a "Proposal" or "Message".
     4.  Publishes it to `user.{id}.inbox` via NATS.
 
+**Autonomous Loop**:
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Fetching : Timer (15m)
+    Fetching --> Analyzing : Logs Received
+    
+    state Analyzing {
+        [*] --> CheckPermissions
+        CheckPermissions --> CheckBottlenecks
+        CheckBottlenecks --> CheckRoles
+    }
+    
+    Analyzing --> InsightFound : Pattern Detected
+    Analyzing --> Idle : No Issues
+    
+    InsightFound --> Publishing : Create Suggestion
+    Publishing --> Idle : Sent to NATS
+```
+
 ---
 
-## 🔄 Key Workflows
+## 🔐 Security & Access Control
 
-### A. User Chat Query
-1.  **Input**: User asks "What are my tasks for this month?" via `POST /api/v1/agent/query`.
-2.  **Routing**: The **Orchestrator** analyzes the intent.
-3.  **Delegation**: Orchestrator calls **DB Search Agent**.
-4.  **Execution**: DB Agent looks up `GET /tasks`, calls the API, and returns JSON data.
-5.  **Synthesis**: Orchestrator receives the JSON, formats it into a friendly message ("You have 3 tasks..."), and returns it to the user.
+The system implements a **Zero-Trust Access Control** model where the Agentic System itself does *not* possess super-admin privileges. Instead, it impersonates the user who initiated the request.
 
-### B. Autonomous Log Analysis
-1.  **Trigger**: Validated by `run_periodic_log_analysis()` background task (runs every 15 mins).
-2.  **Fetch**: **Logs Agent** requests logs from NATS `logs.retrieve`.
-3.  **Reasoning**: Agent identifies that User X got 5 "Access Denied" errors on Project Y.
-4.  **Suggestion**: Agent formulates a proposal: "I suggest granting User X 'Viewer' access to Project Y."
-5.  **Notification**: Agent publishes this suggestion to the admin's inbox via NATS.
+### Identity Propagation Flow
+
+1.  **User Identity**:
+    *   When a user sends a request to `POST /query`, they header `Authorization: Bearer <JWT>`.
+    *   The **FastAPI Gateway** validates this token signature but *does not decode permissions* itself.
+
+2.  **Context Storage**:
+    *   The raw JWT string is saved into a **Thread-Local Context** (`app.core.context.auth_token_context`).
+    *   This makes the token available globally to any function running within that specific request thread.
+
+3.  **LLM Reasoning (The "Plan")**:
+    *   The **DB Search Agent** decides it needs data (e.g., "I need to call `GET /projects`").
+    *   It uses the `read-endpoints.json` context to know *how* to construct the URL, but it has no "keys" to access it yet.
+
+4.  **Tool Execution (The "Action")**:
+    *   The agent calls the python tool `call_crud_endpoint(url="/projects")`.
+    *   Inside this tool, the code retrieves the JWT from the thread-local context.
+    *   It injects it into the outbound HTTP request header: `Authorization: Bearer <JWT>`.
+
+5.  **External Enforcement**:
+    *   The **Core Backend API** receives the request.
+    *   **It** validates the token, checks the user's role, and applies Row-Level Security (RLS).
+    *   If the user has access: Returns `200 OK`.
+    *   If the user does **not** have access: Returns `403 Forbidden`.
+
+6.  **Agent Handling**:
+    *   The Agent receives the `403` error and is instructed to explain this to the user: *"I checked, but you don't have the required permissions to view the projects."*
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant AgentAPI as Agentic Service
+    participant Tool as MCP Tool (api_client)
+    participant CoreAPI as Core Backend (Enforcer)
+
+    User->>AgentAPI: Query + JWT Token
+    AgentAPI->>AgentAPI: Save JWT to Context
+    AgentAPI->>Tool: Agent calls "GET /projects"
+    Tool->>Tool: Retrieve JWT from Context
+    Tool->>CoreAPI: HTTP GET /projects + Authorization: Bearer JWT
+    alt User Has Access
+        CoreAPI-->>Tool: 200 OK + [Project Data]
+        Tool-->>AgentAPI: Return Data
+        AgentAPI-->>User: "Here are your projects..."
+    else User Denied
+        CoreAPI-->>Tool: 403 Forbidden
+        Tool-->>AgentAPI: Return "Access Denied"
+        AgentAPI-->>User: "You don't have permission to see this."
+    end
+```
+
+---
+
+## 🔄 Lifecycle Data Flow
+
+### Request Lifecycle (Chat)
+1.  **Auth Layer**: `HTTPBearer` validates JWT.
+2.  **Context Injection**: Token, WorkspaceID, and Role are saved.
+3.  **Agent Execution**:
+    *   Orchestrator receives query.
+    *   Calls Sub-Agent (e.g., DB Agent).
+    *   Sub-Agent executing Tool.
+    *   Tool injects `Authorization` header.
+    *   External API returns data.
+4.  **Response**:
+    *   Agent generates text.
+    *   **Side Effect**: Text published to NATS (`user.{id}.inbox`).
+    *   **Side Effect**: Audit Log published to (`logs.trace`).
+    *   HTTP Response returned to user.
 
 ---
 
