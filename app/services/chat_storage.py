@@ -162,3 +162,13 @@ class CassandraService:
         except Exception as e:
              logging.error(f"Error fetching user sessions: {e}")
              return []
+
+    def update_session_name(self, user_id: str, session_id: str, new_name: str):
+        try:
+            # We need to find the row first because updated_at is part of PK
+            # Use allow_filtering since we don't have updated_at
+            row = UserSessionModel.objects(user_id=user_id, session_id=session_id).allow_filtering().first()
+            if row:
+                row.update(session_name=new_name)
+        except Exception as e:
+            logging.error(f"Error updating session name: {e}")

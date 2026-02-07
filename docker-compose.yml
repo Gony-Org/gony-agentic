@@ -8,12 +8,18 @@ services:
       - QDRANT_PORT=${QDRANT_PORT}
       - NATS_URL=${NATS_URL}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - GOOGLE_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL}
+      - CRUD_API_URL=${CRUD_API_URL}
       - CASSANDRA_HOST=cassandra
     depends_on:
       - qdrant
       - nats
       - cassandra
+    volumes:
+      - ./app:/app/app
+      - ./.env:/app/.env
     networks:
       - gony-network
 

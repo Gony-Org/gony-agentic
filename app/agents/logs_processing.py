@@ -1,5 +1,5 @@
 from agno.agent import Agent
-from agno.models.google import Gemini
+from agno.models.anthropic import Claude
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.vectordb.qdrant import Qdrant
@@ -132,7 +132,7 @@ logs_knowledge_base = Knowledge(
 logs_processing_agent = Agent(
     name="Log Logic Agent",
     role="System Log Analyst & Consultant",
-    model=Gemini(id=settings.GEMINI_MODEL, api_key=settings.GEMINI_API_KEY),
+    model=Claude(id=settings.ANTHROPIC_MODEL, api_key=settings.ANTHROPIC_API_KEY),
     knowledge=logs_knowledge_base,
     tools=[fetch_logs, publish_suggestion],
     markdown=True,

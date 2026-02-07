@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 from agno.agent import Agent
-from agno.models.google import Gemini
+from agno.models.anthropic import Claude
 from agno.team import Team
 from app.core.config import settings
 from app.agents.db_search_agent import db_search_agent
@@ -16,7 +16,7 @@ from app.models.chat import ChatMessage, ChatRole
 orchestrator_team = Team(
     name="Gony Orchestrator Team",
     role="Virtual Colleague & Project Manager",
-    model=Gemini(id=settings.GEMINI_MODEL, api_key=settings.GEMINI_API_KEY),
+    model=Claude(id=settings.ANTHROPIC_MODEL, api_key=settings.ANTHROPIC_API_KEY),
     # No external intent tool needed; reasoning is internal.
     instructions="""
     You are a Virtual Colleague in the Gony Workspace.
@@ -46,12 +46,23 @@ orchestrator_team = Team(
         - **If Unknown**: Ask for clarification within the context of project management.
 
     3.  **Synthesize the Final Response** (after delegation):
-        - Receive the structured context from the DB Search Agent.
-        - Translate the technical status (success, access_denied, not_found) into a natural, helpful response.
-        - "I checked the system, and..."
-        - If access is denied, explain it as a policy enforcement ("You don't have the required permissions for that resource.") rather than a system error.
+        - Receive the structured context from the agents.
+        - **CRITICAL**: Translate all technical status codes, agent names, and API errors into natural, helpful language.
+        - **NEVER** mention "DB Search Agent", "Document Agent", "Logs Agent", "API endpoints", "JSON output", or "Status Code".
+        - If a tool fails or an API is unreachable:
+            - Say: "I'm having trouble accessing that information right now. It looks like the system is temporarily unavailable."
+            - Do NOT explain *why* (e.g. "NATS connection failed" or "Endpoint 404").
+        - If access is denied:
+            - Say: "I checked, but you don't have the required permissions to view that information."
+        - If the result is **empty** or **not found** (e.g., no tasks, no projects, no documents):
+            - Frame it positively and naturally based on the context.
+            - **Tasks**: "It looks like your schedule is clear for this month!" or "You don't have any pending tasks."
+            - **Workflows**: "There are no active workflows at the moment."
+            - **Documents**: "I couldn't find any documents matching that description."
+            - **Team/Members**: "It appears this workspace doesn't have any other members yet."
+            - **General**: "I checked, but didn't find any information on that."
     
-    Tone: Professional, collaborative, and context-aware.
+    Tone: Professional, collaborative, warm, and strictly non-technical regarding internal architecture. You are a colleague, not a debugger.
     """,
     markdown=True,
     members=[db_search_agent, document_agent, logs_processing_agent],

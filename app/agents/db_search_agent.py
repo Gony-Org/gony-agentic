@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 from agno.agent import Agent
-from agno.models.google import Gemini
+from agno.models.anthropic import Claude
 
 from app.core.config import settings
 from app.tools.postgresql.db_tools import list_tables, describe_table
@@ -26,7 +26,7 @@ context_str = json.dumps(CRUD_CONTEXT, indent=2)
 db_search_agent = Agent(
     name="DB Search Agent",
     role="Database and API Specialist",
-    model=Gemini(id=settings.GEMINI_MODEL, api_key=settings.GEMINI_API_KEY),
+    model=Claude(id=settings.ANTHROPIC_MODEL, api_key=settings.ANTHROPIC_API_KEY),
     tools=[list_tables, describe_table, call_crud_endpoint],
     description="You are an intelligent agent responsible for finding information in a database using a set of CRUD API endpoints.",
     instructions=f"""
@@ -43,7 +43,7 @@ db_search_agent = Agent(
     1.  Analyze the user query.
     2.  If helpful, use `list_tables` to see what tables exist (e.g. to confirm if 'projects' or 'workspaces' exist).
     3.  Select the best matching endpoint from the 'Available API Endpoints Context'.
-    4.  Construct the full URL (base: http://localhost:{settings.APP_PORT}) and parameters.
+    4.  Construct the full URL (base: {settings.CRUD_API_URL}) and parameters.
     5.  Call `call_crud_endpoint` to execute the request.
     
     CRITICAL: Error Analysis & Reporting

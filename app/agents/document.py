@@ -1,5 +1,5 @@
 from agno.agent import Agent
-from agno.models.google import Gemini
+from agno.models.anthropic import Claude
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.vectordb.qdrant import Qdrant
@@ -23,6 +23,7 @@ except Exception as e:
 
 # Qdrant Knowledge Base
 # We assume the collection 'documents' is populated with document metadata/chunks
+# Note: Keeping GeminiEmbedder as embeddings are separate from chat model
 vector_db = Qdrant(
     collection="documents",
     host=settings.QDRANT_HOST,
@@ -41,7 +42,7 @@ knowledge_base = Knowledge(
 document_agent = Agent(
     name="Document Agent",
     role="Document Researcher & Summarizer",
-    model=Gemini(id=settings.GEMINI_MODEL, api_key=settings.GEMINI_API_KEY),
+    model=Claude(id=settings.ANTHROPIC_MODEL, api_key=settings.ANTHROPIC_API_KEY),
     knowledge=knowledge_base,
     tools=[fetch_document_content],
     markdown=True,

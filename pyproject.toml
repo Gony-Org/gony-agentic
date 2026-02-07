@@ -19,4 +19,5 @@ dependencies = [
     "cassandra-driver>=3.29.0",
     "google-genai>=1.0.0",
     "cqlengine>=0.21.0",
+    "anthropic>=0.78.0",
 ]
