@@ -47,23 +47,26 @@ async def shutdown_event():
             
     await nats_service.close()
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer()
+
 @router.post("/query", response_model=AgentResponse)
-async def query_agent(payload: AgentRequest, request: Request):
+async def query_agent(
+    payload: AgentRequest, 
+    request: Request,
+    auth: HTTPAuthorizationCredentials = Depends(security)
+):
     """
     Endpoint to interact with the Gony Agentic system (Agno-powered + Cassandra History).
     """
     try:
         # 1. Extract Authentication
-        token = request.headers.get("Authorization")
-        if not token:
-            # Try to get from cookie
-            cookie_token = request.cookies.get("auth_token")
-            if cookie_token:
-                token = f"Bearer {cookie_token}"
+        token = auth.credentials
         
         # Set context for tools to use
         if token:
-            auth_token_context.set(token)
+            auth_token_context.set(f"Bearer {token}")
         
         # ... Session Management ...
         session_id = payload.session_id if payload.session_id else str(uuid.uuid4())
@@ -133,18 +136,19 @@ async def query_agent(payload: AgentRequest, request: Request):
         # Publish Audit Log
         import json
         audit_payload = {
-            "resource": "agent_interaction",
-            "action": "query",
+            "resource": "chat-bot",
+            "action": "message", # Primary action for user query
             "userId": payload.user_id,
-            "role": "user", # Defaulting as we don't extract it from token yet
-            "workspaceId": None, # Defaulting as we don't have it
+            "role": payload.role or "unknown",
+            "workspaceId": payload.workspace_id,
             "metadata": json.dumps({
                 "ip": request.client.host if request.client else "unknown",
                 "userAgent": request.headers.get("user-agent"),
-                "sessionId": session_id
+                "sessionId": session_id,
+                "query": payload.query # Include query for context
             })
         }
-        await nats_service.publish("logs.trace", json.dumps(audit_payload))
+        logging.info(f"AUDIT LOG: {json.dumps(audit_payload)}"); await nats_service.publish("logs.trace", json.dumps(audit_payload))
 
         # 8. Return Final Response Model
         return AgentResponse(
@@ -160,11 +164,13 @@ async def query_agent(payload: AgentRequest, request: Request):
 async def get_user_chat_history(
     user_id: str, 
     limit: int = 20,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    auth: HTTPAuthorizationCredentials = Depends(security)
 ):
     """
     Get all chat sessions for the authenticated user.
     """
+
     try:
         sessions = cassandra_service.get_user_sessions(user_id, limit=limit, name_filter=search)
         # Convert dict to pydantic model if needed, strictly speaking pydantic handles it if keys match

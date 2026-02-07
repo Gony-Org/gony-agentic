@@ -20,6 +20,8 @@ class ChatHistory(BaseModel):
 
 class AgentRequest(BaseModel):
     user_id: str
+    workspace_id: Optional[str] = None
+    role: Optional[str] = None
     query: str
     session_id: Optional[str] = None # Optional, if not provided, a new one is created
 
